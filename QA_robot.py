@@ -12,6 +12,7 @@ from scipy.spatial.distance import cosine
 from itertools import combinations
 import pickle
 import baidu_spider
+import random as rd
 
 root_path = os.path.abspath(r'./')
 
@@ -54,7 +55,7 @@ word2id=tfidf.vocabulary_
 def filter_keywords(inputs):
     words =list(jieba.cut(inputs))
     non_verbs = [ words[i] for i in range(len(words)) ]#if (pos[i] == 'n') or (pos[i]=='v')
-    non_verbs = [ w for w in non_verbs if  (w not in stop_words) and (w not in remove_words) #
+    non_verbs = [ w for w in non_verbs if  (w not in stop_words) and (w not in remove_words) 
                 and (w in word2id)]
 #     print(words,'\r\n' ,pos,'\r\n',non_verbs)
 #     tfidf.transform([' '.join(non_verbs)])
@@ -109,6 +110,14 @@ def search(inputs,sort_method,bc):
 
 def talk(inputs,thresh_hold,bc):
 #     inputs = '太阳到地球的距离'
+    if ''.join(re.findall('\w+',inputs)) in ['你好','您好','你好啊','您好啊']:
+        return rd.choice(
+                [
+                    ' 你好啊，很高兴见到你',
+                    '你好，你好',
+                    '好啊'
+                ]
+        )
     doc_indices = search(inputs,2,bc)
     if doc_indices:
         retrived_questins = qadata.question[doc_indices].values
@@ -130,4 +139,4 @@ def talk(inputs,thresh_hold,bc):
 if __name__ == "__main__":
     # laoding bert service
     bc = BertClient()
-    talk('地球直径是多少',0.1,bc)
+    print(talk('你好',0.1,bc))
